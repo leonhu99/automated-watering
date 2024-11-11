@@ -1,0 +1,33 @@
+pumps:
+  - id: "pump_1"
+    pin: 0
+    pump_rate: 200.0
+    description: ""
+  - id: "pump_2"
+    pin: 0
+    pump_rate: 200.0
+    description: ""
+  - id: "pump_3"
+    pin: 0
+    pump_rate: 200.0
+    description: ""
+  - id: "pump_4"
+    pin: 0
+    pump_rate: 200.0
+    description: ""
+  - id: "pump_5"
+    pin: 0
+    pump_rate: 200.0
+    description: ""
+  - id: "pump_6"
+    pin: 0
+    pump_rate: 200.0
+    description: ""
+  - id: "pump_7"
+    pin: 0
+    pump_rate: 200.0
+    description: ""
+  - id: "pump_8"
+    pin: 0
+    pump_rate: 200.0
+    description: ""
