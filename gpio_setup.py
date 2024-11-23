@@ -1,14 +1,19 @@
+import yaml
 from typing import List
 from pump import *
 from sensor import *
-import yaml
+import util
 # import RPi.GPIO as GPIO
 
 class GPIO_Setup:
+
     def __instantiate_pumps(pump_list: List[Pump]) -> None:
-        # load pump_data from config/pump_config.yaml
-        with open('config/pump_config.yaml', 'r') as pump_file:
-            pump_data = yaml.safe_load(pump_file)
+        # load pump_data from config/config.yaml
+        try:
+            with open('config/config.yaml', 'r') as config_file:
+                pump_data = yaml.safe_load(config_file)
+        except FileNotFoundError:
+            print("Config file cannot be found!")
 
         # create pumps from read data
         for pump in pump_data['pumps']:
@@ -23,9 +28,12 @@ class GPIO_Setup:
 
 
     def __instantiate_sensors(sensor_list: List[Sensor]) -> None:
-        # load sensor_data from config/sensor_config.yaml
-        with open('config/sensor_config.yaml', 'r') as sensor_file:
-            sensor_data = yaml.safe_load(sensor_file)
+        # load sensor_data from config/config.yaml
+        try:
+            with open('config/config.yaml', 'r') as config_file:
+                sensor_data = yaml.safe_load(config_file)
+        except FileNotFoundError:
+            print("Config file cannot be found!")
 
         # create sensors from read data
         for sensor in sensor_data['sensors']:
@@ -34,6 +42,9 @@ class GPIO_Setup:
 
             # configure pin of sensor as input  with Pull-Down (not sure if that is correct!)
             # GPIO.setup(temp_sensor.pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+        
+        # set initial last value for each sensor from log
+        util.init_last_value(sensor_list)
 
 
     def configure(pump_list: List[Pump], sensor_list: List[Sensor]) -> None:
