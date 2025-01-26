@@ -4,6 +4,7 @@ general:
     use_webserver: True # whether to use a webserver (default: True)
     server_ip: 127.0.0.1 # IP-address for webserver (default: 127.0.0.1)
     port: 56565 # port for webserver (default: 80)
+    board_mode: "BAORD" # GPIO mode (default: BOARD)
 pumps:
   - id: "pump_1"
     pin: 0
