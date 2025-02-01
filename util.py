@@ -115,7 +115,7 @@ def read_analog_sensors(sensor_list: List[Sensor], spi1: spidev.SpiDev, spi2: sp
     """
 
     for sensor in sensor_list:
-        counter = sensor[-1]
+        counter = int(sensor.id[-1])
 
         # read sensors 1-6
         if (counter <= 6):
