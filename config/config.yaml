@@ -10,37 +10,37 @@ pumps:
   # pin: Pin on the RaspberryPi. Depends on the board mode specified above
   # pump_rate: [ml/min], Rate at which water can be pumped by the pump  (default: 200.0)
   - id: "pump_1"
-    pin: 0
+    pin: 11
     pump_rate: 200.0
   - id: "pump_2"
-    pin: 0
+    pin: 13
     pump_rate: 200.0
   - id: "pump_3"
-    pin: 0
+    pin: 15
     pump_rate: 200.0
   - id: "pump_4"
-    pin: 0
+    pin: 29
     pump_rate: 200.0
   - id: "pump_5"
-    pin: 0
+    pin: 31
     pump_rate: 200.0
   - id: "pump_6"
-    pin: 0
+    pin: 37
     pump_rate: 200.0
   - id: "pump_7"
-    pin: 0
+    pin: 16
     pump_rate: 200.0
   - id: "pump_8"
-    pin: 0
+    pin: 18
     pump_rate: 200.0
   - id: "pump_9"
-    pin: 0
+    pin: 22
     pump_rate: 200.0
   - id: "pump_10"
-    pin: 0
+    pin: 32
     pump_rate: 200.0
   - id: "pump_11"
-    pin: 0
+    pin: 36
     pump_rate: 200.0
 sensors: # defaults: dry_value = 520, wet_value = 260
   - id: "sensor_1"
