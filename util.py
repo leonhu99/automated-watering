@@ -1,5 +1,6 @@
 import os, time, csv, random, yaml
-#import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO
+import spidev
 from datetime import datetime
 from typing import List, Tuple, Union
 from sensor import Sensor
@@ -33,6 +34,7 @@ def get_configuration() -> List[Union[int, bool, str]]:
     use_webserver: bool = False
     server_ip: str = ""
     port: int = 0
+    board_mode: str = ""
 
     # open config file
     try:
@@ -48,11 +50,12 @@ def get_configuration() -> List[Union[int, bool, str]]:
         use_webserver = bool(data['use_webserver'])
         server_ip = str(data['server_ip'])
         port = int(data['port'])
+        board_mode = str(data['board_mode'])
+        
+    return [quantity, interval_time, use_webserver, server_ip, port, board_mode]
 
-    return [quantity, interval_time, use_webserver, server_ip, port]
 
-
-def check_all_sensors(pump_list: List[Pump], sensor_list: List[Sensor], AMOUNT_OF_WATER: int) -> None:
+def water_plants(pump_list: List[Pump], sensor_list: List[Sensor], AMOUNT_OF_WATER: int) -> None:
     """Function that iteratively checks every sensor for its value
     and activates the corresponding pump if the moisture [%] is below 25%.
     
@@ -69,15 +72,7 @@ def check_all_sensors(pump_list: List[Pump], sensor_list: List[Sensor], AMOUNT_O
     -------
     None
     """
-    
     for sensor in sensor_list:
-        # fetch data from sensor pin
-        # sensor.last_value = GPIO.input(sensor.pin)
-
-        # only for simulation, delete when using real sensors and uncomment lines above
-        value = random.randint(260, 521)
-        sensor.last_value = value
-
         # calculate moisture percentage
         moisturePercentage: int = int((1-((sensor.last_value/sensor.wet_value) - 1)) * 100);
         
@@ -85,12 +80,71 @@ def check_all_sensors(pump_list: List[Pump], sensor_list: List[Sensor], AMOUNT_O
         if moisturePercentage >= 0 and moisturePercentage <= 25:
             for pump in pump_list:
                 if pump.id[-1] == sensor.id[-1]:
-                    # GPIO.output(pump.pin, GPIO.LOW)
+                    # activate corresponding pump (LOW-active)
+                    GPIO.output(pump.pin, GPIO.LOW)
                     time.sleep(AMOUNT_OF_WATER/(pump.pump_rate/60))
+
+                    # save watering event in logfile
                     write_to_logfile(datetime.now(), sensor.id, round(AMOUNT_OF_WATER/(pump.pump_rate/60), 2), sensor.last_value)
-                    # GPIO.output(pump.pin, GPIO.LOW)
-                    sensor.last_value = 260
                     
+                    # deactivate pump
+                    GPIO.output(pump.pin, GPIO.HIGH)
+
+
+def read_analog_sensors(sensor_list: List[Sensor], spi1: spidev.SpiDev, spi2: spidev.SpiDev) -> None:
+    """Function that reads the analog values from the MCP3008 ADC and
+    stores the value in the corresponding sensor object.
+    
+    Parameters
+    ----------
+    sensor_list : List[Sensor]
+        List of all sensors
+    spi1 : spidev.SpiDev
+        The first MCP3008 AD converter
+    spi2 : spidev.SpiDev
+        The second MCp3008 AD converter
+
+    Returns
+    -------
+    None
+    """
+    for sensor in sensor_list:
+        counter = sensor[-1]
+
+        # read sensors 1-6
+        if (counter <= 6):
+            # use MCP3008#1 and substract 1 from ID to get corresponding channel
+            sensor.last_value = read_channel(spi1, counter-1)
+        # read sensors 7-11
+        else:
+            # use MCP3008#2 and subtract 8 from ID to get corresponding channel
+            sensor.last_value = read_channel(spi2, counter-8)
+
+
+def read_channel(spi: spidev.SpiDev, channel: int) -> int:
+    """ Auxiliary function to read the analog data of the sensors of a MCP3008 (Analog/Digital Converter)
+
+    Parameters
+    ----------
+    spi : spiDev.SpiDev
+        The SPI object (= A/D converter)
+
+    Returns
+    -------
+    An Integer representing the value read from the sensor.
+    """
+    if channel < 0 or channel > 7:
+        raise ValueError("Channel must be between 0-7!")
+
+    # Send 3 Byte message: Startbit, Mode (Single/Diff), Channel
+    command = [1, (8 + channel) << 4, 0]
+    response = spi.xfer2(command)
+
+    # Evaluate response
+    result = ((response[1] & 3) << 8) | response[2]
+
+    return result
+
 
 def write_to_logfile(date_of_watering: datetime, sensor_id: str, duration: float, soil_value: int) -> None:
     """Function that saves all made changes in a logfile. 
@@ -152,11 +206,13 @@ def init_last_value(sensor_list: List[Sensor]) -> None:
     data: List[str] = []
     parser = CSVParser('log/watering_log.csv')
     data = parser.parse_csv()
-    if not data:
-        # log file is empty => set last value to 0
-        for sensor in sensor_list:
-            sensor.last_value = 0
-    else:
+
+    # set all last values to 0
+    for sensor in sensor_list:
+        sensor.last_value = 0
+        
+    if data:
+        # log contains values for (some) sensors
         for sensor in sensor_list:
             for entry in reversed(data):
                 # Find newest value for every sensor by splitting entry

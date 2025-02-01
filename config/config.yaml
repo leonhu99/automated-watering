@@ -1,9 +1,10 @@
 general:
   - amount_of_water: 5 # [ml], Amount of water used to moisturize soil (default: 50)
     interval_time: 7 # [s], Intervals at which to measure (default: 1800)
-    use_webserver: True # whether to use a webserver (default: True)
+    use_webserver: True # whether to use a webserver [True | False] (default: True)
     server_ip: 127.0.0.1 # IP-address for webserver (default: 127.0.0.1)
     port: 56565 # port for webserver (default: 80)
+    board_mode: "BOARD" # GPIO mode [BCM | BOARD] (default: BOARD)
 pumps:
   - id: "pump_1"
     pin: 0
@@ -49,79 +50,58 @@ pumps:
     pin: 0
     pump_rate: 200.0
     description: ""
-  - id: "pump_12"
-    pin: 0
-    pump_rate: 200.0
-    description: ""
 sensors:
   - id: "sensor_1"
-    pin: 0
     description: ""
     dry_value: 520
     wet_value: 260
     last_value: 0
   - id: "sensor_2"
-    pin: 0
     description: ""
     dry_value: 520
     wet_value: 260
     last_value: 0
   - id: "sensor_3"
-    pin: 0
     description: ""
     dry_value: 520
     wet_value: 260
     last_value: 0
   - id: "sensor_4"
-    pin: 0
     description: ""
     dry_value: 520
     wet_value: 260
     last_value: 0
   - id: "sensor_5"
-    pin: 0
     description: ""
     dry_value: 520
     wet_value: 260
     last_value: 0
   - id: "sensor_6"
-    pin: 0
     description: ""
     dry_value: 520
     wet_value: 260
     last_value: 0
   - id: "sensor_7"
-    pin: 0
     description: ""
     dry_value: 520
     wet_value: 260
     last_value: 0
   - id: "sensor_8"
-    pin: 0
     description: ""
     dry_value: 520
     wet_value: 260
     last_value: 0
   - id: "sensor_9"
-    pin: 0
     description: ""
     dry_value: 520
     wet_value: 260
     last_value: 0
   - id: "sensor_10"
-    pin: 0
     description: ""
     dry_value: 520
     wet_value: 260
     last_value: 0
   - id: "sensor_11"
-    pin: 0
-    description: ""
-    dry_value: 520
-    wet_value: 260
-    last_value: 0
-  - id: "sensor_12"
-    pin: 0
     description: ""
     dry_value: 520
     wet_value: 260
