@@ -29,6 +29,7 @@ def get_configuration() -> List[Union[int, bool, str]]:
     -------
     A List containing every setting specified in 'general'-sector of the config file.
     """
+
     quantity: int = 0
     interval_time: int = 0
     use_webserver: bool = False
@@ -72,6 +73,7 @@ def water_plants(pump_list: List[Pump], sensor_list: List[Sensor], AMOUNT_OF_WAT
     -------
     None
     """
+
     for sensor in sensor_list:
         # calculate moisture percentage
         moisture_percentage: int = int((1-((sensor.last_value/sensor.wet_value) - 1)) * 100);
@@ -108,6 +110,7 @@ def read_analog_sensors(sensor_list: List[Sensor], spi1: spidev.SpiDev, spi2: sp
     -------
     None
     """
+
     for sensor in sensor_list:
         counter = sensor[-1]
 
@@ -133,6 +136,7 @@ def read_channel(spi: spidev.SpiDev, channel: int) -> int:
     -------
     An Integer representing the value read from the sensor.
     """
+
     if channel < 0 or channel > 7:
         raise ValueError("Channel must be between 0-7!")
 
@@ -203,6 +207,7 @@ def init_last_values(sensor_list: List[Sensor]) -> None:
     -------
     None
     """
+    
     data: List[str] = []
     parser = CSVParser('log/watering_log.csv')
     data = parser.parse_csv()
