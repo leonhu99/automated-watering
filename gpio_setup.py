@@ -8,7 +8,7 @@ from sensor import *
 
 class GPIO_Setup:
 
-    def __read_IO_data() -> any:
+    def _read_IO_data() -> any:
         """Function that reads the configuration from config/config.yaml
 
         Parameters
@@ -98,6 +98,6 @@ class GPIO_Setup:
         GPIO.setwarnings(False)
         GPIO.setmode(GPIO.BOARD) if board_mode == "BOARD" else GPIO.setmode(GPIO.BCM)
 
-        IO_DATA = GPIO_Setup.__read_IO_data()
+        IO_DATA = GPIO_Setup._read_IO_data()
         GPIO_Setup.__instantiate_pumps(IO_DATA, pump_list)
         GPIO_Setup.__instantiate_sensors(IO_DATA, sensor_list)

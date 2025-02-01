@@ -57,7 +57,7 @@ def calibrate_pumps():
     GPIO.setwarnings(False)
     GPIO.setmode(GPIO.BOARD) if BOARD_MODE == "BOARD" else GPIO.setmode(GPIO.BCM)
 
-    pump_data = GPIO_Setup.__read_IO_data()
+    pump_data = GPIO_Setup._read_IO_data()
     pump_list: List[Pump] = []
     GPIO_Setup.__instantiate_pumps(pump_data, pump_list)
 
