@@ -1,108 +1,89 @@
 general:
   - amount_of_water: 5 # [ml], Amount of water used to moisturize soil (default: 50)
     interval_time: 7 # [s], Intervals at which to measure (default: 1800)
-    use_webserver: True # whether to use a webserver [True | False] (default: True)
+    use_webserver: True # Whether to use a webserver [True | False] (default: True)
     server_ip: 127.0.0.1 # IP-address for webserver (default: 127.0.0.1)
-    port: 56565 # port for webserver (default: 80)
+    port: 56565 # Port for webserver (default: 80)
     board_mode: "BOARD" # GPIO mode [BCM | BOARD] (default: BOARD)
-pumps:
+pumps: 
+  # id: Identifier for the pump. Make sure to end with an unique integer that corresponds to that of the sensor
+  # pin: Pin on the RaspberryPi. Depends on the board mode specified above
+  # pump_rate: [ml/min], Rate at which water can be pumped by the pump  (default: 200.0)
   - id: "pump_1"
     pin: 0
     pump_rate: 200.0
-    description: ""
   - id: "pump_2"
     pin: 0
     pump_rate: 200.0
-    description: ""
   - id: "pump_3"
     pin: 0
     pump_rate: 200.0
-    description: ""
   - id: "pump_4"
     pin: 0
     pump_rate: 200.0
-    description: ""
   - id: "pump_5"
     pin: 0
     pump_rate: 200.0
-    description: ""
   - id: "pump_6"
     pin: 0
     pump_rate: 200.0
-    description: ""
   - id: "pump_7"
     pin: 0
     pump_rate: 200.0
-    description: ""
   - id: "pump_8"
     pin: 0
     pump_rate: 200.0
-    description: ""
   - id: "pump_9"
     pin: 0
     pump_rate: 200.0
-    description: ""
   - id: "pump_10"
     pin: 0
     pump_rate: 200.0
-    description: ""
   - id: "pump_11"
     pin: 0
     pump_rate: 200.0
-    description: ""
-sensors:
+sensors: # defaults: dry_value = 520, wet_value = 260
   - id: "sensor_1"
     description: ""
-    dry_value: 520
-    wet_value: 260
-    last_value: 0
+    dry_value: 648
+    wet_value: 274
   - id: "sensor_2"
     description: ""
-    dry_value: 520
-    wet_value: 260
-    last_value: 0
+    dry_value: 648
+    wet_value: 274
   - id: "sensor_3"
     description: ""
-    dry_value: 520
-    wet_value: 260
-    last_value: 0
+    dry_value: 651
+    wet_value: 282
   - id: "sensor_4"
     description: ""
-    dry_value: 520
-    wet_value: 260
-    last_value: 0
+    dry_value: 656
+    wet_value: 282
   - id: "sensor_5"
     description: ""
-    dry_value: 520
-    wet_value: 260
-    last_value: 0
+    dry_value: 654
+    wet_value: 283
   - id: "sensor_6"
     description: ""
-    dry_value: 520
-    wet_value: 260
-    last_value: 0
+    dry_value: 653
+    wet_value: 278
   - id: "sensor_7"
     description: ""
-    dry_value: 520
-    wet_value: 260
-    last_value: 0
+    dry_value: 640
+    wet_value: 271
   - id: "sensor_8"
     description: ""
-    dry_value: 520
-    wet_value: 260
-    last_value: 0
+    dry_value: 629
+    wet_value: 266
   - id: "sensor_9"
     description: ""
-    dry_value: 520
-    wet_value: 260
-    last_value: 0
+    dry_value: 643
+    wet_value: 273
   - id: "sensor_10"
     description: ""
-    dry_value: 520
-    wet_value: 260
-    last_value: 0
+    dry_value: 643
+    wet_value: 276
   - id: "sensor_11"
     description: ""
-    dry_value: 520
-    wet_value: 260
-    last_value: 0
+    dry_value: 639
+    wet_value: 273
