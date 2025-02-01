@@ -57,7 +57,7 @@ def get_configuration() -> List[Union[int, bool, str]]:
 
 def water_plants(pump_list: List[Pump], sensor_list: List[Sensor], AMOUNT_OF_WATER: int) -> None:
     """Function that iteratively checks every sensor for its value
-    and activates the corresponding pump if the moisture [%] is below 25%.
+    and activates the corresponding pump if the moisture is below 25%.
     
     Parameters
     ----------
@@ -74,10 +74,10 @@ def water_plants(pump_list: List[Pump], sensor_list: List[Sensor], AMOUNT_OF_WAT
     """
     for sensor in sensor_list:
         # calculate moisture percentage
-        moisturePercentage: int = int((1-((sensor.last_value/sensor.wet_value) - 1)) * 100);
+        moisture_percentage: int = int((1-((sensor.last_value/sensor.wet_value) - 1)) * 100);
         
         # check if soil is very dry [0%-25%], activate pump if necessary
-        if moisturePercentage >= 0 and moisturePercentage <= 25:
+        if moisture_percentage >= 0 and moisture_percentage <= 25:
             for pump in pump_list:
                 if pump.id[-1] == sensor.id[-1]:
                     # activate corresponding pump (LOW-active)
@@ -190,7 +190,7 @@ def write_to_logfile(date_of_watering: datetime, sensor_id: str, duration: float
         writer.writerow([date_of_watering.strftime('%Y-%m-%d %H:%M:%S'), sensor_id, duration, soil_value])
 
 
-def init_last_value(sensor_list: List[Sensor]) -> None:
+def init_last_values(sensor_list: List[Sensor]) -> None:
     """Function that reads newest changes to each sensor from logfile
     and sets initial values based on those values for every sensor.
     
@@ -206,10 +206,6 @@ def init_last_value(sensor_list: List[Sensor]) -> None:
     data: List[str] = []
     parser = CSVParser('log/watering_log.csv')
     data = parser.parse_csv()
-
-    # set all last values to 0
-    for sensor in sensor_list:
-        sensor.last_value = 0
         
     if data:
         # log contains values for (some) sensors
@@ -220,25 +216,3 @@ def init_last_value(sensor_list: List[Sensor]) -> None:
                 if split_entry[1] == sensor.id:
                     sensor.last_value = int(split_entry[3])
                     break
-
-
-def get_last_values(sensor_list: List[Sensor]) -> List[Tuple[str, int]]:
-    """Function for generating the correspondences between a sensor and its
-    last measured value.
-    
-    Parameters
-    ----------
-    sensor_list : List[Sensor]
-        A list of Sensor objects
-
-    Returns
-    -------
-    last_values : List[Tuple[str, int]]
-        A List containing a tuple for every sensor consisting of sensor.id and sensor.last_value 
-    """
-    last_values: List[str, int] = []
-
-    for sensor in sensor_list:
-        last_values.append([sensor.id, sensor.last_value])
-
-    return last_values

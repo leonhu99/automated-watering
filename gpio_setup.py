@@ -18,7 +18,7 @@ class GPIO_Setup:
 
         # create pumps from read data
         for pump in pump_data['pumps']:
-            temp_pump = Pump(id = pump['id'], pin = pump['pin'], pump_rate = pump['pump_rate'], description = pump['description'])
+            temp_pump = Pump(id = pump['id'], pin = pump['pin'], pump_rate = pump['pump_rate'])
             pump_list.append(temp_pump)
 
             # configure pin of pump as output 
@@ -38,8 +38,11 @@ class GPIO_Setup:
 
         # create sensors from read data
         for sensor in sensor_data['sensors']:
-            temp_sensor = Sensor(id = sensor['id'], description = sensor['description'], dry_value = sensor['dry_value'], wet_value = sensor['wet_value'], last_value = sensor['last_value'])
+            temp_sensor = Sensor(id = sensor['id'], description = sensor['description'], dry_value = sensor['dry_value'], wet_value = sensor['wet_value'], last_value = 0)
             sensor_list.append(temp_sensor)
+
+        # initial values for "last_value"
+        util.init_last_values(sensor_list)
 
 
     def configure(board_mode: str, pump_list: List[Pump], sensor_list: List[Sensor]) -> None:

@@ -37,7 +37,7 @@ def api_sensors():
 if __name__ == '__main__':
     # configuration
     config = get_configuration()
-    IP_ADRESS = config[3]
+    IP_ADDRESS = config[3]
     PORT = config[4]
 
-    app.run(host=IP_ADRESS, port=PORT, debug=True)
+    app.run(host=IP_ADDRESS, port=PORT, debug=True)
