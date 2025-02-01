@@ -1,4 +1,5 @@
 class Sensor:
+    """Class for creating a Sensor object"""
     def __init__(self, id: str, description: str, dry_value: int, wet_value: int, last_value: int = 0):
             self._id: str = id
             self._description: str = description

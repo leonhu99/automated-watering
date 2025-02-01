@@ -1,4 +1,5 @@
 class Pump:
+    """Class for creating a Pump object"""
     def __init__(self, id: str, pin: int, pump_rate: float):
             self._id: str = id
             self._pin: int = pin
