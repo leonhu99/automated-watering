@@ -25,6 +25,10 @@ class CSVParser():
 def get_configuration() -> List[Union[int, bool, str]]:
     """Function that fetches all settings from the config file located in config/config.yaml
 
+    Parameters 
+    ----------
+    None
+
     Returns
     -------
     A List containing every setting specified in 'general'-sector of the config file.

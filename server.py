@@ -10,16 +10,19 @@ sensors = []
 
 @app.route('/')
 def index():
+    # render start page
     return render_template('index.html')
 
 
 @app.route('/dashboard')
 def dashboard():
+    # render dashboard for sensors
     return render_template('dashboard.html')
 
 
 @app.route('/logs')
 def logs():
+    # render log overview
     with open('log/watering_log.csv', newline='', encoding='utf-8') as csvfile:
         reader = csv.DictReader(csvfile)
         logs = list(reader)
@@ -30,7 +33,8 @@ def logs():
 def api_sensors():
     global sensors
     if request.method == 'POST':
-        sensors = request.json  # Daten vom Client
+        # data received from client 
+        sensors = request.json
     return jsonify(sensors)
 
 
