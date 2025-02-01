@@ -1,4 +1,4 @@
-import os, spidev, time, csv, requests, yaml
+import os, spidev, time, csv, requests, yaml, re
 import RPi.GPIO as GPIO
 from datetime import datetime
 from typing import List, Tuple, Union
@@ -77,14 +77,18 @@ def water_plants(pump_list: List[Pump], sensor_list: List[Sensor], AMOUNT_OF_WAT
     None
     """
 
+    pattern: str = "(\w+)_(\d+)"
+
     for sensor in sensor_list:
+        temp_sensor_id = int(re.search(pattern, sensor.id).group(2))
         # calculate moisture percentage
         moisture_percentage: int = int((1-((sensor.last_value/sensor.wet_value) - 1)) * 100);
         
         # check if soil is very dry [0%-25%], activate pump if necessary
         if moisture_percentage >= 0 and moisture_percentage <= 25:
             for pump in pump_list:
-                if pump.id[-1] == sensor.id[-1]:
+                temp_pump_id = int(re.search(pattern, pump.id).group(2))
+                if temp_pump_id == temp_sensor_id:
                     # activate corresponding pump (LOW-active)
                     GPIO.output(pump.pin, GPIO.LOW)
                     time.sleep(AMOUNT_OF_WATER/(pump.pump_rate/60))
@@ -115,7 +119,8 @@ def read_analog_sensors(sensor_list: List[Sensor], spi1: spidev.SpiDev, spi2: sp
     """
 
     for sensor in sensor_list:
-        counter = int(sensor.id[-1])
+        pattern: str = "(\w+)_(\d+)"
+        counter: int = int(re.search(pattern, sensor.id).group(2))
 
         # read sensors 1-6
         if (counter <= 6):
