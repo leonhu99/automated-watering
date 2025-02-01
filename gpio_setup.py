@@ -8,7 +8,7 @@ from sensor import *
 
 class GPIO_Setup:
 
-    def _read_IO_data() -> any:
+    def __read_IO_data() -> any:
         """Function that reads the configuration from config/config.yaml
 
         Parameters
