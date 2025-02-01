@@ -1,9 +1,10 @@
 import yaml
-from typing import List
+import util
+import RPi.GPIO as GPIO
+from typing import List, Union
 from pump import *
 from sensor import *
-import util
-# import RPi.GPIO as GPIO
+
 
 class GPIO_Setup:
 
@@ -21,10 +22,10 @@ class GPIO_Setup:
             pump_list.append(temp_pump)
 
             # configure pin of pump as output 
-            # GPIO.setup(temp_pump.pin, GPIO.OUT)
+            GPIO.setup(temp_pump.pin, GPIO.OUT)
 
-            # initially set to HIGH due to pumps being LOW-active
-            # GPIO.output(temp_pump.pin, GPIO.HIGH) 
+            # initially set to HIGH as pumps are LOW-active
+            GPIO.output(temp_pump.pin, GPIO.HIGH) 
 
 
     def __instantiate_sensors(sensor_list: List[Sensor]) -> None:
@@ -37,18 +38,11 @@ class GPIO_Setup:
 
         # create sensors from read data
         for sensor in sensor_data['sensors']:
-            temp_sensor = Sensor(id = sensor['id'], pin = sensor['pin'], description = sensor['description'], dry_value = sensor['dry_value'], wet_value = sensor['wet_value'])
+            temp_sensor = Sensor(id = sensor['id'], description = sensor['description'], dry_value = sensor['dry_value'], wet_value = sensor['wet_value'], last_value = sensor['last_value'])
             sensor_list.append(temp_sensor)
 
-            # configure pin of sensor as input  with Pull-Down (not sure if that is correct!)
-            # GPIO.setup(temp_sensor.pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-        
-        # set initial last value for each sensor from log
-        util.init_last_value(sensor_list)
 
-
-    def configure(pump_list: List[Pump], sensor_list: List[Sensor]) -> None:
-        # use BOARD-mode
-        # GPIO.setmode(GPIO.BOARD)
+    def configure(board_mode: str, pump_list: List[Pump], sensor_list: List[Sensor]) -> None:
+        GPIO.setmode(GPIO.BOARD) if board_mode == "BOARD" else GPIO.setmode(GPIO.BCM)
         GPIO_Setup.__instantiate_pumps(pump_list)
         GPIO_Setup.__instantiate_sensors(sensor_list)

@@ -1,7 +1,6 @@
 class Sensor:
-    def __init__(self, id: str, pin: int, description: str, dry_value: int, wet_value: int, last_value: int = 0):
+    def __init__(self, id: str, description: str, dry_value: int, wet_value: int, last_value: int = 0):
             self._id: str = id
-            self._pin: int = pin
             self._description: str = description
             self._dry_value: int = dry_value
             self._wet_value: int = wet_value
@@ -12,11 +11,6 @@ class Sensor:
     @property
     def id(self) -> str:
             return self._id
-
-    # Getter for pin
-    @property
-    def pin(self) -> int: 
-            return self._pin
 
     # Getter for description
     @property
