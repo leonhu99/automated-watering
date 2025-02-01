@@ -124,7 +124,7 @@ def read_analog_sensors(sensor_list: List[Sensor], spi1: spidev.SpiDev, spi2: sp
         # read sensors 7-11
         else:
             # use MCP3008#2 and subtract 8 from ID to get corresponding channel
-            sensor.last_value = read_channel(spi2, counter-8)
+            sensor.last_value = read_channel(spi2, counter-7)
 
 
 def read_channel(spi: spidev.SpiDev, channel: int) -> int:
