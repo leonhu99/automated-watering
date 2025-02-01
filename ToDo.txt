@@ -1,5 +1,0 @@
-- In gpio_setup.py:
-    > read config file only once
-    > instantiate sensors with A/D-converter setup (MISO, MOSI etc.)
-    > test read sensors
-- Add template for logs.html to match design in dashboard.html
