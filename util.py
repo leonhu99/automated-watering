@@ -82,8 +82,9 @@ def water_plants(pump_list: List[Pump], sensor_list: List[Sensor], AMOUNT_OF_WAT
     for sensor in sensor_list:
         temp_sensor_id = int(re.search(pattern, sensor.id).group(2))
         # calculate moisture percentage
-        moisture_percentage: int = int((1-((sensor.last_value/sensor.wet_value) - 1)) * 100);
-        
+        moisture_percentage: int = int(((sensor.dry_value - sensor.last_value) / (sensor.dry_value - sensor.wet_value)) * 100)
+        print(f"Moisture of {sensor.id}: {moisture_percentage}")
+
         # check if soil is very dry [0%-25%], activate pump if necessary
         if moisture_percentage >= 0 and moisture_percentage <= 25:
             for pump in pump_list:
@@ -121,15 +122,28 @@ def read_analog_sensors(sensor_list: List[Sensor], spi1: spidev.SpiDev, spi2: sp
     for sensor in sensor_list:
         pattern: str = "(\w+)_(\d+)"
         counter: int = int(re.search(pattern, sensor.id).group(2))
+        temp_value: int = -1
 
         # read sensors 1-6
         if (counter <= 6):
             # use MCP3008#1 and substract 1 from ID to get corresponding channel
-            sensor.last_value = read_channel(spi1, counter-1)
+            temp_value = read_channel(spi1, counter-1)
+            if temp_value <= sensor.wet_value:
+                sensor.last_value = sensor.wet_value
+            elif temp_value >= sensor.dry_value:
+                sensor.last_value = sensor.dry_value
+            else:
+                sensor.last_value = temp_value
         # read sensors 7-11
         else:
             # use MCP3008#2 and subtract 8 from ID to get corresponding channel
-            sensor.last_value = read_channel(spi2, counter-7)
+            temp_value = read_channel(spi2, counter-7)
+            if temp_value <= sensor.wet_value:
+                sensor.last_value = sensor.wet_value
+            elif temp_value >= sensor.dry_value:
+                sensor.last_value = sensor.dry_value
+            else:
+                sensor.last_value = temp_value
 
 
 def read_channel(spi: spidev.SpiDev, channel: int) -> int:
