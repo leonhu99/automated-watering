@@ -18,10 +18,11 @@ def run() -> None:
     # load general configuration
     config = get_configuration()
     AMOUNT_OF_WATER = config[0]
-    INTERVAL_TIME = config[1]
-    USE_WEBSERVER = config[2]
-    SERVER_URL = f'http://{config[3]}:{config[4]}/api/sensors'
-    BOARD_MODE = config[5] 
+    INTERVAL_TIME: float = config[1]
+    USE_WEBSERVER: bool = config[2]
+    SERVER_URL: str = f'http://{config[3]}:{config[4]}/api/sensors'
+    BOARD_MODE: str = config[5]
+    MEASUREMENT_SAMPLES: int = config[6]
 
     # SPI configuration
     SPI1 = spidev.SpiDev(0, 0) # CE0 for MCP3008#1 (sensors 1-6)
@@ -33,13 +34,14 @@ def run() -> None:
 
     # configure I/O and set values for pumps and sensors
     GPIO_Setup.configure(BOARD_MODE, pump_list, sensor_list)
+    
     if USE_WEBSERVER:
         # send sensor data to server
         data = generate_sensor_data(sensor_list)
         send_sensor_data(data, SERVER_URL)
 
     while(True):
-        read_analog_sensors(sensor_list, SPI1, SPI2)
+        read_analog_sensors(sensor_list, SPI1, SPI2, MEASUREMENT_SAMPLES)
         water_plants(pump_list, sensor_list, AMOUNT_OF_WATER)
 
         if USE_WEBSERVER:

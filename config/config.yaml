@@ -5,6 +5,7 @@ general:
     server_ip: 127.0.0.1 # IP-address for webserver (default: 127.0.0.1)
     port: 56565 # Port for webserver (default: 80)
     board_mode: "BOARD" # GPIO mode [BCM | BOARD] (default: BOARD)
+    measurement_samples: 5 # Number of readings of each sensor taken before computing median to reduce measurement error (default: 5)
 pumps: 
   # id: Identifier for the pump. Make sure to end with an unique integer that corresponds to that of the sensor
   # pin: Pin on the RaspberryPi. Depends on the board mode specified above

@@ -1,4 +1,4 @@
-import os, spidev, time, csv, requests, yaml, re
+import os, spidev, time, csv, requests, yaml, re, statistics
 import RPi.GPIO as GPIO
 from datetime import datetime
 from typing import List, Tuple, Union
@@ -21,7 +21,7 @@ class CSVParser():
         return []
 
 
-def get_configuration() -> List[Union[int, bool, str]]:
+def get_configuration() -> List[Union[int, bool, str, float]]:
     """Function that fetches all settings from the config file located in config/config.yaml
 
     Parameters 
@@ -34,11 +34,12 @@ def get_configuration() -> List[Union[int, bool, str]]:
     """
 
     quantity: int = 0
-    interval_time: int = 0
+    interval_time: float = 0
     use_webserver: bool = False
     server_ip: str = ""
     port: int = 0
     board_mode: str = ""
+    measurement_samples: int = 0
 
     # open config file
     try:
@@ -49,14 +50,15 @@ def get_configuration() -> List[Union[int, bool, str]]:
 
     # extract general configuration data
     for data in config_data['general']:
-        quantity = int(data['amount_of_water'])
+        quantity = float(data['amount_of_water'])
         interval_time = int(data['interval_time'])
         use_webserver = bool(data['use_webserver'])
         server_ip = str(data['server_ip'])
         port = int(data['port'])
         board_mode = str(data['board_mode'])
+        measurement_samples = int(data['measurement_samples'])
         
-    return [quantity, interval_time, use_webserver, server_ip, port, board_mode]
+    return [quantity, interval_time, use_webserver, server_ip, port, board_mode, measurement_samples]
 
 
 def water_plants(pump_list: List[Pump], sensor_list: List[Sensor], AMOUNT_OF_WATER: int) -> None:
@@ -101,9 +103,9 @@ def water_plants(pump_list: List[Pump], sensor_list: List[Sensor], AMOUNT_OF_WAT
                     GPIO.output(pump.pin, GPIO.HIGH)
 
 
-def read_analog_sensors(sensor_list: List[Sensor], spi1: spidev.SpiDev, spi2: spidev.SpiDev) -> None:
-    """Function that reads the analog values from the MCP3008 ADC and
-    stores the value in the corresponding sensor object.
+def read_analog_sensors(sensor_list: List[Sensor], spi1: spidev.SpiDev, spi2: spidev.SpiDev, measurement_samples: int) -> None:
+    """Function that reads the analog values from the MCP3008 ADC a predefined number of times, forms the median to reduce the measurement errors and
+    stores the calculated value in the corresponding sensor object.
     
     Parameters
     ----------
@@ -112,7 +114,9 @@ def read_analog_sensors(sensor_list: List[Sensor], spi1: spidev.SpiDev, spi2: sp
     spi1 : spidev.SpiDev
         The first MCP3008 AD converter
     spi2 : spidev.SpiDev
-        The second MCp3008 AD converter
+        The second MCP3008 AD converter
+    measurement_samples : int
+        Number of measurement samples for each sensor. Median is used over all measurements to reduce measurement errors.
 
     Returns
     -------
@@ -121,29 +125,27 @@ def read_analog_sensors(sensor_list: List[Sensor], spi1: spidev.SpiDev, spi2: sp
 
     for sensor in sensor_list:
         pattern: str = "(\w+)_(\d+)"
-        counter: int = int(re.search(pattern, sensor.id).group(2))
-        temp_value: int = -1
+        identifier: int = int(re.search(pattern, sensor.id).group(2))
 
-        # read sensors 1-6
-        if (counter <= 6):
-            # use MCP3008#1 and substract 1 from ID to get corresponding channel
-            temp_value = read_channel(spi1, counter-1)
-            if temp_value <= sensor.wet_value:
+        for j in range(measurement_samples):
+            # read sensor <measurement_samples> times
+
+            temp_samples: List[int] = []
+            
+            if (identifier <= 6):
+                # sensors 1-6 connected to MCP3008#1 and substract 1 from ID to get corresponding channel
+                temp_samples.append(read_channel(spi1, identifier-1))
+            else:
+                # sensors 7-11 connected to MCP3008#2 and subtract 8 from ID to get corresponding channel
+                temp_samples.append(read_channel(spi2, identifier-7))
+
+            median_temp_samples: int = statistics.median(temp_samples)
+            if median_temp_samples <= sensor.wet_value:
                 sensor.last_value = sensor.wet_value
-            elif temp_value >= sensor.dry_value:
+            elif median_temp_samples >= sensor.dry_value:
                 sensor.last_value = sensor.dry_value
             else:
-                sensor.last_value = temp_value
-        # read sensors 7-11
-        else:
-            # use MCP3008#2 and subtract 8 from ID to get corresponding channel
-            temp_value = read_channel(spi2, counter-7)
-            if temp_value <= sensor.wet_value:
-                sensor.last_value = sensor.wet_value
-            elif temp_value >= sensor.dry_value:
-                sensor.last_value = sensor.dry_value
-            else:
-                sensor.last_value = temp_value
+                sensor.last_value = median_temp_samples
 
 
 def read_channel(spi: spidev.SpiDev, channel: int) -> int:
