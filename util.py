@@ -126,26 +126,24 @@ def read_analog_sensors(sensor_list: List[Sensor], spi1: spidev.SpiDev, spi2: sp
     for sensor in sensor_list:
         pattern: str = "(\w+)_(\d+)"
         identifier: int = int(re.search(pattern, sensor.id).group(2))
+        temp_samples: List[int] = []
 
         for j in range(measurement_samples):
             # read sensor <measurement_samples> times
-
-            temp_samples: List[int] = []
-            
             if (identifier <= 6):
                 # sensors 1-6 connected to MCP3008#1 and substract 1 from ID to get corresponding channel
                 temp_samples.append(read_channel(spi1, identifier-1))
             else:
                 # sensors 7-11 connected to MCP3008#2 and subtract 8 from ID to get corresponding channel
                 temp_samples.append(read_channel(spi2, identifier-7))
-
-            median_temp_samples: int = statistics.median(temp_samples)
-            if median_temp_samples <= sensor.wet_value:
-                sensor.last_value = sensor.wet_value
-            elif median_temp_samples >= sensor.dry_value:
-                sensor.last_value = sensor.dry_value
-            else:
-                sensor.last_value = median_temp_samples
+            
+        median_temp_samples: int = statistics.median(temp_samples)
+        if median_temp_samples <= sensor.wet_value:
+            sensor.last_value = sensor.wet_value
+        elif median_temp_samples >= sensor.dry_value:
+            sensor.last_value = sensor.dry_value
+        else:
+            sensor.last_value = median_temp_samples
 
 
 def read_channel(spi: spidev.SpiDev, channel: int) -> int:
