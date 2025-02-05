@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         sensorBox.classList.add("sensor-box");
 
         // calculate moisture-percentage
-        let moisturePercentage = parseInt(Math.floor((1-((last_value/wet_value) - 1)) * 100));
+        let moisturePercentage = parseInt(((dry_value - last_value) / (dry_value - wet_value)) * 100)
 
         // set color of corresponding sensor ring
         let ringColor = "";
