@@ -1,48 +1,51 @@
 general:
-  - amount_of_water: 5 # [ml], Amount of water used to moisturize soil (default: 50)
-    interval_time: 7 # [s], Intervals at which to measure (default: 1800)
+  - amount_of_water: 15.0 # [ml], Amount of water used to moisturize soil (default: 50)
+    interval_time: 1800 # [s], Intervals at which to measure (default: 1800)
     use_webserver: True # Whether to use a webserver [True | False] (default: True)
     server_ip: 127.0.0.1 # IP-address for webserver (default: 127.0.0.1)
     port: 56565 # Port for webserver (default: 80)
     board_mode: "BOARD" # GPIO mode [BCM | BOARD] (default: BOARD)
     measurement_samples: 5 # Number of readings of each sensor taken before computing median to reduce measurement error (default: 5)
+    use_watering_schedule: True
+    watering_window_start: "08:00" # [HH:mm], Earliest time for watering (24h format)
+    watering_window_end: "23:00" # [HH:mm] - Latest time for watering (24h format)
 pumps: 
   # id: Identifier for the pump. Make sure to end with an unique integer that corresponds to that of the sensor
   # pin: Pin on the RaspberryPi. Depends on the board mode specified above
   # pump_rate: [ml/min], Rate at which water can be pumped by the pump  (default: 200.0)
   - id: "pump_1"
     pin: 11
-    pump_rate: 200.0
+    pump_rate: 109.0
   - id: "pump_2"
     pin: 13
-    pump_rate: 200.0
+    pump_rate: 152.2
   - id: "pump_3"
     pin: 15
-    pump_rate: 200.0
+    pump_rate: 195.5
   - id: "pump_4"
     pin: 29
-    pump_rate: 200.0
+    pump_rate: 142.0
   - id: "pump_5"
     pin: 31
-    pump_rate: 200.0
+    pump_rate: 189.0
   - id: "pump_6"
     pin: 37
-    pump_rate: 200.0
+    pump_rate: 186.0
   - id: "pump_7"
     pin: 16
-    pump_rate: 200.0
+    pump_rate: 175.0
   - id: "pump_8"
     pin: 18
-    pump_rate: 200.0
+    pump_rate: 148.0
   - id: "pump_9"
     pin: 22
-    pump_rate: 200.0
+    pump_rate: 226.0
   - id: "pump_10"
     pin: 32
-    pump_rate: 200.0
+    pump_rate: 149.5
   - id: "pump_11"
     pin: 36
-    pump_rate: 200.0
+    pump_rate: 141.5
 sensors: # defaults: dry_value = 520, wet_value = 260
   - id: "sensor_1"
     description: ""
@@ -74,17 +77,17 @@ sensors: # defaults: dry_value = 520, wet_value = 260
     wet_value: 271
   - id: "sensor_8"
     description: ""
-    dry_value: 629
+    dry_value: 710
     wet_value: 266
   - id: "sensor_9"
     description: ""
-    dry_value: 643
+    dry_value: 692
     wet_value: 273
   - id: "sensor_10"
     description: ""
-    dry_value: 643
-    wet_value: 276
+    dry_value: 743
+    wet_value: 375
   - id: "sensor_11"
     description: ""
-    dry_value: 639
+    dry_value: 659
     wet_value: 273

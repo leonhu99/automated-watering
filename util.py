@@ -21,7 +21,7 @@ class CSVParser():
         return []
 
 
-def get_configuration() -> List[Union[int, bool, str, float]]:
+def get_configuration() -> List[Union[int, bool, str, float, datetime.time]]:
     """Function that fetches all settings from the config file located in config/config.yaml
 
     Parameters 
@@ -33,13 +33,16 @@ def get_configuration() -> List[Union[int, bool, str, float]]:
     A List containing every setting specified in 'general'-sector of the config file.
     """
 
-    quantity: int = 0
-    interval_time: float = 0
+    quantity: float = 0.0
+    interval_time: float = 0.0
     use_webserver: bool = False
     server_ip: str = ""
     port: int = 0
     board_mode: str = ""
     measurement_samples: int = 0
+    use_watering_schedule: bool = False
+    watering_window_start: datetime.time
+    watering_window_end: datetime.time
 
     # open config file
     try:
@@ -51,17 +54,20 @@ def get_configuration() -> List[Union[int, bool, str, float]]:
     # extract general configuration data
     for data in config_data['general']:
         quantity = float(data['amount_of_water'])
-        interval_time = int(data['interval_time'])
+        interval_time = float(data['interval_time'])
         use_webserver = bool(data['use_webserver'])
         server_ip = str(data['server_ip'])
         port = int(data['port'])
         board_mode = str(data['board_mode'])
         measurement_samples = int(data['measurement_samples'])
+        use_watering_schedule = bool(data['use_watering_schedule'])
+        watering_window_start = datetime.strptime(data['watering_window_start'], "%H:%M").time()
+        watering_window_end = datetime.strptime(data['watering_window_end'], "%H:%M").time()        
         
-    return [quantity, interval_time, use_webserver, server_ip, port, board_mode, measurement_samples]
+    return [quantity, interval_time, use_webserver, server_ip, port, board_mode, measurement_samples, use_watering_schedule, watering_window_start, watering_window_end]
 
 
-def water_plants(pump_list: List[Pump], sensor_list: List[Sensor], AMOUNT_OF_WATER: int) -> None:
+def water_plants(pump_list: List[Pump], sensor_list: List[Sensor], AMOUNT_OF_WATER: float) -> None:
     """Function that iteratively checks every sensor for its value
     and activates the corresponding pump if the moisture is below 25%.
     
@@ -71,7 +77,7 @@ def water_plants(pump_list: List[Pump], sensor_list: List[Sensor], AMOUNT_OF_WAT
         A list of Pump objects
     sensor_list : List[Sensor]
         A list of Sensor objects
-    AMOUNT_OF_WATER : int
+    AMOUNT_OF_WATER : float
         The amount of water used to water a plant (configured in config/config.yaml)
 
     Returns
@@ -85,7 +91,6 @@ def water_plants(pump_list: List[Pump], sensor_list: List[Sensor], AMOUNT_OF_WAT
         temp_sensor_id = int(re.search(pattern, sensor.id).group(2))
         # calculate moisture percentage
         moisture_percentage: int = int(((sensor.dry_value - sensor.last_value) / (sensor.dry_value - sensor.wet_value)) * 100)
-        print(f"Moisture of {sensor.id}: {moisture_percentage}")
 
         # check if soil is very dry [0%-25%], activate pump if necessary
         if moisture_percentage >= 0 and moisture_percentage <= 25:
